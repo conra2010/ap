@@ -55,6 +55,9 @@
     },
     "autoload": {
         "psr-4": {
+            "Symfony\\Component\\Mercure\\": "overrides/symfony/mercure/src/",
+            "ApiPlatform\\GraphQl\\": "overrides/api-platform/core/src/ApiPlatform/GraphQl/",
+            "ApiPlatform\\Doctrine\\EventListener\\": "overrides/api-platform/core/src/ApiPlatform/Doctrine/EventListener/",
             "App\\": "src/"
         }
     },
