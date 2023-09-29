@@ -248,7 +248,7 @@ final class PublishMercureUpdatesListener
             $data = $options['data'] ?? $this->serializer->serialize($object, key($this->formats), $context);
         }
 
-        $updates = array_merge([$this->buildUpdate($iri, $data, $options)], $this->getGraphQlSubscriptionUpdates($object, $options, $type));
+        $updates = array_merge([$this->buildUpdate($iri, $data, $options, $type)], $this->getGraphQlSubscriptionUpdates($object, $options, $type));
 
         foreach ($updates as $update) {
             if ($options['enable_async_update'] && $this->messageBus) {
@@ -276,7 +276,7 @@ final class PublishMercureUpdatesListener
             $updates[] = $this->buildUpdate(
                 $this->graphQlMercureSubscriptionIriGenerator->generateTopicIri($subscriptionId),
                 (string) (new JsonResponse($data))->getContent(),
-                $options
+                $options, $type
             );
         }
 
@@ -286,8 +286,8 @@ final class PublishMercureUpdatesListener
     /**
      * @param string|string[] $iri
      */
-    private function buildUpdate(string|array $iri, string $data, array $options): Update
+    private function buildUpdate(string|array $iri, string $data, array $options, string $type): Update
     {
-        return new Update($iri, $data, $options['private'] ?? false, $options['id'] ?? null, $options['type'] ?? null, $options['retry'] ?? null);
+        return new Update($iri, $data, $options['private'] ?? false, $options['id'] ?? null, $type, $options['retry'] ?? null);
     }
 }

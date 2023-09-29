@@ -94,3 +94,6 @@ docker compose exec php composer dump-autoload
 ## GraphQL
 ### Subscription URN (001)
 Only takes selection fields into account, not the actual resource ID. All "Post" resources will get updates about field changes, even when the modified "Post" is another resource.
+## SSE
+### Message type is not sent (002)
+The _$type_ is there, but it's not finally sent to the hub.
