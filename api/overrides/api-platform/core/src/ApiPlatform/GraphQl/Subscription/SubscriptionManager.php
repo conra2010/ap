@@ -61,7 +61,8 @@ final class SubscriptionManager implements SubscriptionManagerInterface
             }
         }
 
-        $subscriptionId = $this->subscriptionIdentifierGenerator->generateSubscriptionIdentifier($fields);
+        //  We want the ID of GraphQL subscriptions to account for the resource ID too
+        $subscriptionId = $this->subscriptionIdentifierGenerator->generateSubscriptionIdentifier(array_merge($fields, ["iri"=>$iri]));
         unset($result['clientSubscriptionId']);
         $subscriptions[] = [$subscriptionId, $fields, $result];
         $subscriptionsCacheItem->set($subscriptions);

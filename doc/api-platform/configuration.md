@@ -92,5 +92,5 @@ Will override in _composer.json_ to change _vendor_ code.
 docker compose exec php composer dump-autoload
 ```
 ## GraphQL
-### Subscription URN
+### Subscription URN (001)
 Only takes selection fields into account, not the actual resource ID. All "Post" resources will get updates about field changes, even when the modified "Post" is another resource.
