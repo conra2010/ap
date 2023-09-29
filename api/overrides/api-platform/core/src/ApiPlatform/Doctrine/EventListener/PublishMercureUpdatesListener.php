@@ -28,6 +28,7 @@ use ApiPlatform\Symfony\Messenger\DispatchTrait;
 use Doctrine\Common\EventArgs;
 use Doctrine\ODM\MongoDB\Event\OnFlushEventArgs as MongoDbOdmOnFlushEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs as OrmOnFlushEventArgs;
+use Doctrine\ORM\UnitOfWork;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -60,6 +61,12 @@ final class PublishMercureUpdatesListener
     private \SplObjectStorage $createdObjects;
     private \SplObjectStorage $updatedObjects;
     private \SplObjectStorage $deletedObjects;
+    /**
+     * GraphQL subscriptions only
+     *
+     * @var \SplObjectStorage
+     */
+    private \SplObjectStorage $subscribedToObjects;
 
     /**
      * @param array<string, string[]|string> $formats
@@ -106,17 +113,19 @@ final class PublishMercureUpdatesListener
 
         $methodName = $eventArgs instanceof OrmOnFlushEventArgs ? 'getScheduledEntityInsertions' : 'getScheduledDocumentInsertions';
         foreach ($uow->{$methodName}() as $object) {
-            $this->storeObjectToPublish($object, 'createdObjects');
+            $this->storeObjectToPublish($object, $uow, 'createdObjects');
         }
 
         $methodName = $eventArgs instanceof OrmOnFlushEventArgs ? 'getScheduledEntityUpdates' : 'getScheduledDocumentUpdates';
         foreach ($uow->{$methodName}() as $object) {
-            $this->storeObjectToPublish($object, 'updatedObjects');
+            $this->storeObjectToPublish($object, $uow, 'updatedObjects');
+            //  and an update might trigger GraphQL subscriptions updates (depends on field selection and change sets)
+            $this->storeObjectToPublish($object, $uow, 'subscribedToObjects');
         }
 
         $methodName = $eventArgs instanceof OrmOnFlushEventArgs ? 'getScheduledEntityDeletions' : 'getScheduledDocumentDeletions';
         foreach ($uow->{$methodName}() as $object) {
-            $this->storeObjectToPublish($object, 'deletedObjects');
+            $this->storeObjectToPublish($object, $uow, 'deletedObjects');
         }
     }
 
@@ -134,6 +143,10 @@ final class PublishMercureUpdatesListener
                 $this->publishUpdate($object, $this->updatedObjects[$object], 'update');
             }
 
+            foreach ($this->subscribedToObjects as $pair) {
+                $this->publishSubscriptionUpdate($pair, $this->subscribedToObjects[$pair], type: 'gqlsubs');
+            }
+
             foreach ($this->deletedObjects as $object) {
                 $this->publishUpdate($object, $this->deletedObjects[$object], 'delete');
             }
@@ -147,9 +160,11 @@ final class PublishMercureUpdatesListener
         $this->createdObjects = new \SplObjectStorage();
         $this->updatedObjects = new \SplObjectStorage();
         $this->deletedObjects = new \SplObjectStorage();
+
+        $this->subscribedToObjects = new \SplObjectStorage();
     }
 
-    private function storeObjectToPublish(object $object, string $property): void
+    private function storeObjectToPublish(object $object, UnitOfWork $uow, string $property): void
     {
         if (null === $resourceClass = $this->getResourceClass($object)) {
             return;
@@ -228,6 +243,16 @@ final class PublishMercureUpdatesListener
             return;
         }
 
+        if ('subscribedToObjects' === $property) {
+            //  for GraphQL subscriptions we need the object and the change sets
+            $this->subscribedToObjects[(object) [
+                'alpha' => $object,
+                'beta' => $uow
+            ]] = $options;
+
+            return;
+        }
+
         $this->{$property}[$object] = $options;
     }
 
@@ -248,7 +273,39 @@ final class PublishMercureUpdatesListener
             $data = $options['data'] ?? $this->serializer->serialize($object, key($this->formats), $context);
         }
 
-        $updates = array_merge([$this->buildUpdate($iri, $data, $options, $type)], $this->getGraphQlSubscriptionUpdates($object, $options, $type));
+        $updates = [$this->buildUpdate($iri, $data, $options, $type)];
+
+        foreach ($updates as $update) {
+            if ($options['enable_async_update'] && $this->messageBus) {
+                $this->dispatch($update);
+                continue;
+            }
+
+            $this->hubRegistry->getHub($options['hub'] ?? null)->publish($update);
+        }
+    }
+
+    private function publishSubscriptionUpdate(object $pair, array $options, string $type): void
+    {
+        $object = $pair->alpha;
+        $uow = $pair->beta;
+
+        if ($object instanceof \stdClass) {
+            // By convention, if the object has been deleted, we send only its IRI and its type.
+            // This may change in the feature, because it's not JSON Merge Patch compliant,
+            // and I'm not a fond of this approach.
+            $iri = $options['topics'] ?? $object->iri;
+            /** @var string $data */
+            $data = json_encode(['@id' => $object->id] + ($this->includeType ? ['@type' => $object->type] : []), \JSON_THROW_ON_ERROR);
+        } else {
+            $resourceClass = $this->getObjectClass($object);
+            $context = $options['normalization_context'] ?? $this->resourceMetadataFactory->create($resourceClass)->getOperation()->getNormalizationContext() ?? [];
+
+            $iri = $options['topics'] ?? $this->iriConverter->getIriFromResource($object, UrlGeneratorInterface::ABS_URL);
+            $data = $options['data'] ?? $this->serializer->serialize($object, key($this->formats), $context);
+        }
+
+        $updates = $this->getGraphQlSubscriptionUpdates($object, $uow, $options, $type);
 
         foreach ($updates as $update) {
             if ($options['enable_async_update'] && $this->messageBus) {
@@ -263,21 +320,36 @@ final class PublishMercureUpdatesListener
     /**
      * @return Update[]
      */
-    private function getGraphQlSubscriptionUpdates(object $object, array $options, string $type): array
+    private function getGraphQlSubscriptionUpdates(object $object, UnitOfWork $uow, array $options, string $type): array
     {
-        if ('update' !== $type || !$this->graphQlSubscriptionManager || !$this->graphQlMercureSubscriptionIriGenerator) {
+        if ('gqlsubs' !== $type || !$this->graphQlSubscriptionManager || !$this->graphQlMercureSubscriptionIriGenerator) {
             return [];
         }
 
+        //  available subscriptions and their selection fields
         $payloads = $this->graphQlSubscriptionManager->getPushPayloads($object);
+
+        //  TODO check Doctrine docs, lots of 'i guess this is...' at work here
+        //  ORM changed fields
+        $changeSets = $uow->getEntityChangeSet($object);
 
         $updates = [];
         foreach ($payloads as [$subscriptionId, $data]) {
-            $updates[] = $this->buildUpdate(
-                $this->graphQlMercureSubscriptionIriGenerator->generateTopicIri($subscriptionId),
-                (string) (new JsonResponse($data))->getContent(),
-                $options, $type
-            );
+            //  GraphQL subscribed fields
+            //  TODO check $data construction and what we might expect here
+            //  don't know if $data might contain more than one key
+            assert(count(array_keys($data)) <= 1);
+            $fieldSelection = array_reduce($data, 'array_merge', array());
+
+            //  only publish update for GraphQL subscription if fields we're interested in actually changed
+            $match = array_intersect_key($fieldSelection, $changeSets);
+            if (count($match) > 0) {
+                $updates[] = $this->buildGraphQlSubscriptionUpdate(
+                    $this->graphQlMercureSubscriptionIriGenerator->generateTopicIri($subscriptionId),
+                    (string)(new JsonResponse($data))->getContent(),
+                    $options, 'gqlsubs'
+                );
+            }
         }
 
         return $updates;
@@ -288,6 +360,15 @@ final class PublishMercureUpdatesListener
      */
     private function buildUpdate(string|array $iri, string $data, array $options, string $type): Update
     {
+        return new Update($iri, $data, $options['private'] ?? false, $options['id'] ?? null, $type, $options['retry'] ?? null);
+    }
+
+    /**
+     * @param string|string[] $iri
+     */
+    private function buildGraphQlSubscriptionUpdate(string|array $iri, string $data, array $options, string $type): Update
+    {
+        //  this is a GraphQL Subscription update, tell Mercure that it is so it simplifies the data sent (skip topics)
         return new Update($iri, $data, $options['private'] ?? false, $options['id'] ?? null, $type, $options['retry'] ?? null);
     }
 }
