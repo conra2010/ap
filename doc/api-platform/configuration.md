@@ -54,6 +54,8 @@ Should be able to list the IDs of posts in GraphQL:
   }
 }
 ```
+# CORS
+Allow access to the "/graphql" path from the web app in the API Platform configuration. Allow access to Mercure in the Caddyfile from the web app.
 # Vue Sample
 Create project:
 ```
@@ -69,3 +71,22 @@ api-platform-vue
 cd api-platform-vue
 pnpm install
 ```
+Setup GraphQL support:
+```
+pnpm add --save @urql/vue graphql
+pnpm add @urql/core
+```
+Setup Quasar:
+```
+pnpm add quasar @quasar/extras
+pnpm add -D @quasar/vite-plugin sass@1.32.12
+```
+Other packages:
+```
+pnpm add @vueuse/core
+pnpm add uuid
+```
+# API Platform Issues
+## GraphQL
+### Subscription URN
+Only takes selection fields into account, not the actual resource ID. All "Post" resources will get updates about field changes, even when the modified "Post" is another resource.
