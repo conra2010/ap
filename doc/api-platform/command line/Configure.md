@@ -7,6 +7,7 @@ The Mercure server is configured with an ad-hoc certification authority, and som
 set CA_BUNDLE (pwd)/api/docker/ca/ca-bundle.crt
 set AP_ENTRYPOINT https://caddy.api-platform.orb.local
 set MERCURE_ENTRYPOINT https://caddy.api-platform.orb.local
+set MERCURE_TOPICS_PREFIX https://caddy.api-platform.orb.local
 ```
 The JWT token can be copied from the Mercure Debug UI that should be running [in your API Platform Caddy](https://caddy.api-platform.orb.local/.well-known/mercure/ui/#discover)
 ```shell
