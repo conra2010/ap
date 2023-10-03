@@ -3,6 +3,11 @@
 > The official project documentation is available **[on the API Platform website](https://api-platform.com)**.
 
 ## Setup
+Review some configuration values in the project.
+```shell
+cat .env
+```
+
 ```shell
 docker compose build --no-cache
 docker compose up --pull --wait

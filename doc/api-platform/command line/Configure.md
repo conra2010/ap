@@ -1,4 +1,3 @@
-
 # Environment
 All commands use the _fish_ shell syntax; probably some minor changes for _bash_.
 
@@ -13,7 +12,7 @@ The JWT token can be copied from the Mercure Debug UI that should be running [in
 ```shell
 open $AP_ENTRYPOINT/.well-known/mercure/ui/#discover
 ```
-Copy the value of the JWT token, and save it into another variable:
+Paste this command, then copy the value of the JWT token, and then execute the command to save the token into another variable:
 ```shell (fish)
 set JWT_TOKEN (pbpaste)
 ```
