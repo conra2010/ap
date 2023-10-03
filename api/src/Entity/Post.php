@@ -2,11 +2,15 @@
 
 namespace App\Entity;
 
+
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ApiResource(mercure: true, paginationEnabled: false)]
+#[ApiFilter(OrderFilter::class, properties: ['id', 'title', 'stars'], arguments: ['orderParameterName' => 'order'])]
 class Post
 {
     #[ORM\Id]
