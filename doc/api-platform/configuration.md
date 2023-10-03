@@ -1,5 +1,6 @@
 # docker
-Given the _.env_ file with a _COMPOSE_PROJECT_NAME_ variable, the Caddy service will be running at server name _caddy.api-platform.orb.local_. Let's setup HTTPS with our own authority.
+Given the _.env_ file with a _COMPOSE_PROJECT_NAME_ variable and running on OrbStack,  the Caddy service will be at server _caddy.api-platform.orb.local_.
+Let's setup HTTPS with our own authority.
 *TODO follow Step CLI documentation/quick start to generate a certificate and key for the server*
 Create a _ca_store_ volume and copy certs there; will mount this when needed.
 ```
