@@ -1,12 +1,16 @@
-# Notes
-All commands use the _fish_ shell syntax.
-The Mercure server is configured with an ad-hoc certification authority, so _httpie_ needs the certificates of both the _root_ and the _intermediate_ authorities to be able to verify the server.
 # Watch subscriptions
+Let's get the current subscriptions in Mercure:
+```shell (fish)
+http --verify $CA_BUNDLE --pretty none -b \
+	GET $MERCURE_ENTRYPOINT/.well-known/mercure/subscriptions \
+	"Authorization: Bearer $JWT_TOKEN"
+```
+Now let's just watch the subscribers and the topic they are subscribed to:
 ```shell (fish)
 while true; clear; date; \
 	http --verify $CA_BUNDLE --pretty none -b \
-		GET https://shodan.local:8443/.well-known/mercure/subscriptions \
-		"Authorization: Bearer $JWT_TOKEN"|jq '.subscriptions'; \
+		GET $MERCURE_ENTRYPOINT/.well-known/mercure/subscriptions \
+		"Authorization: Bearer $JWT_TOKEN"|jq '.subscriptions[]|(.subscriber,.topic)'; \
 	sleep 3; \
 end
 ```
