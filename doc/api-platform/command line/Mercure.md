@@ -14,6 +14,12 @@ while true; clear; date; \
 	sleep 3; \
 end
 ```
+# Subscribe to topics
+Listen to events about the "Post" resource; the modified API Platform will publish the type of change (insert, update, delete, GraphQL Subscription) in the _event_ field of the stream:
+```shell (fish)
+http --verify $CA_BUNDLE -p hbm --stream GET {$MERCURE_ENTRYPOINT}'/.well-known/mercure?topic='{$MERCURE_TOPICS_PREFIX}'/posts/{id}'
+```
+Insert, update or delete some Post resources (in the GraphQL Playground, or in the Vue sample app, for instance) to receive some events.
 # Send updates
 Send sequence of fake/debug updates to a topic. 
 ```shell
