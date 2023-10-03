@@ -2,6 +2,7 @@
     # Debug
     {$CADDY_DEBUG}
     # will install CA certs myself
+    skip_install_trust
 }
 
 # TODO What's this needed for?
@@ -33,7 +34,7 @@ http://caddy {
             # Extra directives
             {$MERCURE_EXTRA_DIRECTIVES}
 
-            cors_origins http://shodan.local:5173 http://shodan.local:5174
+            #cors_origins http://shodan.local:5173 http://shodan.local:5174
         }
         vulcain
 
@@ -53,10 +54,9 @@ http://caddy {
 }
 
 https://caddy.api-platform.orb.local:443 {
-    #   config certs and key for server using docker volume
     #
-    #   remember to decrypt the key first
-    tls /ca_store/etc/tls/caddy.api-platform.orb.local.crt /ca_store/etc/tls/caddy.api-platform.orb.local.key
+    #   remember to decrypt the key should you use your own authority
+    tls /ca/caddy.api-platform.orb.local.crt /ca/caddy.api-platform.orb.local.key
 
     # Matches requests for HTML documents, for static files and for Next.js files,
     # except for known API paths and paths with extensions handled by API Platform
@@ -85,7 +85,7 @@ https://caddy.api-platform.orb.local:443 {
             # Extra directives
             {$MERCURE_EXTRA_DIRECTIVES}
 
-            cors_origins http://shodan.local:5173 http://shodan.local:5174
+            #cors_origins http://shodan.local:5173 http://shodan.local:5174
         }
         vulcain
 

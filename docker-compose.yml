@@ -41,7 +41,8 @@ services:
       - php_socket:/var/run/php
       - caddy_data:/data
       - caddy_config:/config
-      - ca_store:/ca_store:ro
+      # certs and server keys
+      - ./api/docker/ca:/ca:ro
 
 ###> doctrine/doctrine-bundle ###
   database:
@@ -62,9 +63,6 @@ services:
 ###< symfony/mercure-bundle ###
 
 volumes:
-  # CA generated certificates
-  ca_store:
-    external: true
   php_socket:
   caddy_data:
   caddy_config:

@@ -40,7 +40,7 @@ services:
       - ./api/public:/srv/app/public:ro
       - ./api/docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
     environment:
-      MERCURE_EXTRA_DIRECTIVES: demo
+      MERCURE_EXTRA_DIRECTIVES: ${MERCURE_EXTRA_DIRECTIVES}
 
 ###> symfony/mercure-bundle ###
 ###< symfony/mercure-bundle ###
