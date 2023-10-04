@@ -26,7 +26,7 @@ Send sequence of fake/debug updates to a topic.
 seq 1000 | while read line; \
     set TS (date); \
     set DTA '{"@context":"/contexts/Post","@id":"/post/503","@type":"Post","id":493,"title":"Post Title","content":"Post Content Text","httpie":"'$line'","ts":"'$TS'"}'; \
-    set RESPONSE (http --verify $CA_BUNDLE -b --ignore-stdin -f POST https://shodan.local:8443/.well-known/mercure topic='https://caddy.ap.orb.local/posts/493' data=$DTA "Authorization:Bearer $JWT_TOKEN" type='message'); \
+    set RESPONSE (http --verify $CA_BUNDLE -b --ignore-stdin -f POST {$MERCURE_ENTRYPOINT}/.well-known/mercure topic={$MERCURE_TOPICS_PREFIX}'/posts/1' data=$DTA "Authorization:Bearer $JWT_TOKEN" type='message'); \
     echo $line: '{"rq":'$DTA',"rx":{"id":"'$RESPONSE'"}}'; \
     sleep 5; \
 end
