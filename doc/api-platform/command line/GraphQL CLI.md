@@ -7,7 +7,7 @@ set QUERY (jq -c -n --arg query '{ posts { id } }' '{"query":$query}')
 ```
 Complete JSON and send request:
 ```shell
-echo $QUERY|jq '. + {operationName:null,variables:{}}'|http POST http://{$SERVER_NAME}/graphql
+echo $QUERY|jq '. + {operationName:null,variables:{}}'|httpx POST {$AP_ENTRYPOINT}/graphql
 ```
 # Mutation with variables
 ## Insert a new resource
@@ -26,7 +26,7 @@ set QUERY (jq -c -n --arg query '
 
 Use vars to execute the mutation:
 ```shell
-echo $QUERY|jq --arg id "/posts/1" --arg title "Hello!" '. + {operationName:"UPD",variables: {id:$id,title:$title}}'|http POST http://{$SERVER_NAME}/graphql
+echo $QUERY|jq --arg id "/posts/1" --arg title "Hello!" '. + {operationName:"UPD",variables: {id:$id,title:$title}}'|httpx POST {$AP_ENTRYPOINT}/graphql
 ```
 
 And check the change in the playground:

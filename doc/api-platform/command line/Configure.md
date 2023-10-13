@@ -1,11 +1,13 @@
 # Environment
 All commands use the _fish_ shell syntax; probably some minor changes for _bash_.
 ```shell (fish)
-set AP_ENTRYPOINT http://{$SERVER_NAME}
-set MERCURE_ENTRYPOINT http://{$SERVER_NAME}
-set MERCURE_TOPICS_PREFIX http://{$SERVER_NAME}
+set CA_BUNDLE (pwd)/api/docker/ca/ca-bundle.crt
+alias httpx 'http --verify {$CA_BUNDLE}'
+set AP_ENTRYPOINT https://{$SERVER_NAME}
+set MERCURE_ENTRYPOINT https://{$SERVER_NAME}
+set MERCURE_TOPICS_PREFIX https://{$SERVER_NAME}
 ```
-The JWT token can be copied from the Mercure Debug UI that should be running [in your API Platform Caddy](https://caddy.api-platform.orb.local/.well-known/mercure/ui/#discover)
+The JWT token can be copied from the Mercure Debug UI that should be running here:
 ```shell
 open $MERCURE_ENTRYPOINT/.well-known/mercure/ui/#discover
 ```

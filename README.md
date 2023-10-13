@@ -6,10 +6,12 @@ This example will start a modified API Platform in Docker Containers. The caddy 
 ```
 open https://{$SERVER_NAME}
 ```
+Since we are using HTTPS, the certificates in _api/docker/ca_ are valid for specific server names. Right now I'm testing Tailscale and the server name is _ukemochi_.
 ## Setup
 Review some configuration values in the project.
 ```shell
-cat .env
+cp .env .env.local
+cat .env.local
 ```
 
 ```shell
