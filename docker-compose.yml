@@ -34,7 +34,7 @@ services:
     image: ${IMAGES_PREFIX}-caddy:${IMAGES_VERSION}
     networks:
       - api-platform
-      - apvpn
+      # - apvpn
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
@@ -78,8 +78,8 @@ services:
 networks:
   api-platform:
     external: true
-  apvpn:
-    external: true
+  # apvpn:
+  #   external: true
 
 volumes:
   php_socket:
