@@ -49,7 +49,9 @@ http://caddy {
     }
 }
 
-http://benzaiten {
+https://amaterasu.lab.ux {
+
+    tls /ca/amaterasu.lab.ux.crt /ca/amaterasu.lab.ux-unsecure.key
 
     # Matches requests for HTML documents, for static files and for Next.js files,
     # except for known API paths and paths with extensions handled by API Platform

@@ -3,6 +3,8 @@ version: "3.8"
 services:
   php:
     image: ${IMAGES_PREFIX}-php:${IMAGES_VERSION}
+    networks:
+      - api-platform
     depends_on:
       - database
     restart: unless-stopped
@@ -23,11 +25,19 @@ services:
 
   pwa:
     image: ${IMAGES_PREFIX}-pwa:${IMAGES_VERSION}
+    networks:
+      - api-platform
     environment:
       NEXT_PUBLIC_ENTRYPOINT: http://caddy
 
   caddy:
     image: ${IMAGES_PREFIX}-caddy:${IMAGES_VERSION}
+    networks:
+      - api-platform
+      - apvpn
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
     depends_on:
       - php
       - pwa
@@ -43,10 +53,13 @@ services:
       - caddy_config:/config
       # certs and server keys
       - ./api/docker/ca:/ca:ro
+      - ./api/docker/wg:/wg:ro
 
 ###> doctrine/doctrine-bundle ###
   database:
     image: postgres:${POSTGRES_VERSION:-15}-alpine
+    networks:
+      - api-platform
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-app}
       # You should definitely change the password in production
@@ -61,6 +74,12 @@ services:
 # Mercure is installed as a Caddy module, prevent the Flex recipe from installing another service
 ###> symfony/mercure-bundle ###
 ###< symfony/mercure-bundle ###
+
+networks:
+  api-platform:
+    external: true
+  apvpn:
+    external: true
 
 volumes:
   php_socket:
