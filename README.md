@@ -13,10 +13,11 @@ Review some configuration values in the project.
 cp .env .env.local
 cat .env.local
 ```
+See _doc/api-platform/A002 Configuration_ if you need to change the server name, to setup certificates for it.
 
 ```shell
-docker compose build --no-cache
-docker compose up --pull --wait
+docker compose --env-file .env.local build --no-cache
+docker compose --env-file .env.local up --pull --wait
 ```
 ## Testing GraphQL
 Open the welcome page and the GraphQL Playground page.
