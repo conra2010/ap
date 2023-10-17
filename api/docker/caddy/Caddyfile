@@ -63,9 +63,9 @@ http://caddy {
     }
 }
 
-https://ukemochi {
+https://ukemochi.elf-basilisk.ts.net {
 
-    tls /ca/ukemochi.crt /ca/ukemochi_unsecure.key
+    tls /ca/ukemochi.elf-basilisk.ts.net.crt /ca/ukemochi.elf-basilisk.ts.net.key.pem
 
     log {
 		format filter {
