@@ -3,33 +3,37 @@ Setup the [command line tool](https://smallstep.com/docs/step-cli/installation/)
 ```
 brew install step
 ```
-And following the [basic crypto operations document](https://smallstep.com/docs/step-cli/basic-crypto-operations/):
+And following the [basic crypto operations document](https://smallstep.com/docs/step-cli/basic-crypto-operations/)... set a random name for the CA or decide one:
 ```shell
-set CA_ABSURD_NAME (names)
-step certificate create --profile root-ca "{$CA_ABSURD_NAME} Root CA" \
-	{$CA_ABSURD_NAME}_root_ca.crt {$CA_ABSURD_NAME}_root_ca.key
+set CA_NAME (names)
 ```
-An intermediate CA:
+
+Create the certificate and key for the root authority:
+```shell 
+step certificate create --profile root-ca "{$CA_NAME} Root CA" \
+	{$CA_NAME}_root_ca.crt {$CA_NAME}_root_ca.key
+```
+And for the intermediate CA:
 ```shell
-step certificate create "{$CA_ABSURD_NAME} Intermediate CA 1" \
-    {$CA_ABSURD_NAME}_intermediate_ca_one.crt \
-    {$CA_ABSURD_NAME}_intermediate_ca_one.key \
+step certificate create "{$CA_NAME} Intermediate CA 1" \
+    {$CA_NAME}_intermediate_ca_one.crt \
+    {$CA_NAME}_intermediate_ca_one.key \
     --profile intermediate-ca \
-    --ca ./{$CA_ABSURD_NAME}_root_ca.crt \
-    --ca-key ./{$CA_ABSURD_NAME}_root_ca.key
+    --ca ./{$CA_NAME}_root_ca.crt \
+    --ca-key ./{$CA_NAME}_root_ca.key
 ```
 Construct a CA bundle, some command line tools need this:
 ```
-cat {$CA_ABSURD_NAME}_intermediate_ca_one.crt \
-	{$CA_ABSURD_NAME}_root_ca.crt >> {$CA_ABSURD_NAME}_ca_bundle.crt
+cat {$CA_NAME}_intermediate_ca_one.crt \
+	{$CA_NAME}_root_ca.crt >> {$CA_NAME}_ca_bundle.crt
 ```
 Issue a certificate for the Caddy server running at {$SERVER_NAME}:
 ```shell
 step certificate create {$SERVER_NAME} \
 	{$SERVER_NAME}.crt {$SERVER_NAME}.key \
     --profile leaf --not-after=8760h \
-    --ca ./{$CA_ABSURD_NAME}_intermediate_ca_one.crt \
-    --ca-key ./{$CA_ABSURD_NAME}_intermediate_ca_one.key \
+    --ca ./{$CA_NAME}_intermediate_ca_one.crt \
+    --ca-key ./{$CA_NAME}_intermediate_ca_one.key \
     --bundle
 ```
 And decrypt the key to install in the Caddy config:
