@@ -15,6 +15,14 @@ cat .env.local
 ```
 See _doc/api-platform/A002 Configuration_ if you need to change the server name, to setup certificates for it.
 
+> note: ubuntu host (vmware) running docker is missing the _gateway_ in the default bridge, the build will fail (won't be able to connect to alpine mirror); needs _daemon.json_ with option:
+```yaml
+{
+	"default-gateway": "172.17.0.1"
+}
+```
+
+The API Platform docs recommend building and starting the images using:
 ```shell
 docker compose --env-file .env.local build --no-cache
 docker compose --env-file .env.local up --pull --wait

@@ -5,6 +5,17 @@
 
 # TODO What's this needed for?
 http://caddy {
+    log {
+		format filter {
+			wrap console
+			fields {
+				uri query {
+					replace authorization REDACTED
+				}
+			}
+		}
+	}
+
     # Matches requests for HTML documents, for static files and for Next.js files,
     # except for known API paths and paths with extensions handled by API Platform
     @pwa expression `(
@@ -31,6 +42,9 @@ http://caddy {
             subscriptions
             # Extra directives
             {$MERCURE_EXTRA_DIRECTIVES}
+
+            demo
+            cors_origins http://shodan.local:5173 http://shodan:5173
         }
         vulcain
 
@@ -53,6 +67,17 @@ https://ukemochi {
 
     tls /ca/ukemochi.crt /ca/ukemochi_unsecure.key
 
+    log {
+		format filter {
+			wrap console
+			fields {
+				uri query {
+					replace authorization REDACTED
+				}
+			}
+		}
+	}
+
     # Matches requests for HTML documents, for static files and for Next.js files,
     # except for known API paths and paths with extensions handled by API Platform
     @pwa expression `(
@@ -79,6 +104,9 @@ https://ukemochi {
             subscriptions
             # Extra directives
             {$MERCURE_EXTRA_DIRECTIVES}
+
+            demo
+            cors_origins http://shodan.local:5173 http://shodan:5173
         }
         vulcain
 
@@ -102,6 +130,17 @@ https://amaterasu.lab.ux {
 
     tls /ca/amaterasu.lab.ux.crt /ca/amaterasu.lab.ux-unsecure.key
 
+    log {
+		format filter {
+			wrap console
+			fields {
+				uri query {
+					replace authorization REDACTED
+				}
+			}
+		}
+	}
+
     # Matches requests for HTML documents, for static files and for Next.js files,
     # except for known API paths and paths with extensions handled by API Platform
     @pwa expression `(
@@ -128,6 +167,9 @@ https://amaterasu.lab.ux {
             subscriptions
             # Extra directives
             {$MERCURE_EXTRA_DIRECTIVES}
+
+            demo
+            cors_origins http://shodan.local:5173 http://shodan:5173
         }
         vulcain
 
