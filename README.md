@@ -3,7 +3,7 @@
 > The official project documentation is available **[on the API Platform website](https://api-platform.com)**.
 
 This example will use a modified API Platform, and is based on the official distribution. In the Docker definition the web server is Caddy and the corresponding _caddy_ service will be available at
-```
+```bash
 open https://{$SERVER_NAME}
 ```
 once we decide a server name and start the containers.
@@ -15,7 +15,7 @@ Right now I'm testing Tailscale and I'm using a server name _ukemochi.elf-basili
 Before this I've also used the server names that _OrbStack_ provides for Docker services. Did some testing with WireGuard VPN ([linuxserver.io image](https://github.com/linuxserver/docker-wireguard)) and Pi-Hole for DNS, but the Tailscale setup is much easier.
 ## Setup
 Review some configuration values in the project.
-```shell
+```bash
 cp .env .env.local
 cat .env.local
 ```
