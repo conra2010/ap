@@ -12,7 +12,7 @@ Commit: 4a6b8cdfeea4b0c96276989054aca5d04153b4ef
 With a GraphQL subscription on fields "author, title and stars", we don't want updates about mutations on other fields. Issue a mutation on "version" in the Playground and the subscription still gets an event about "author, title and stars".
 #### Changes
 The API Platform code keeps three stores for created, updated and deleted objects. It tries to use the same logic for updates and GraphQL subscriptions.
-I have defined a new store just for GraphQL subscriptions, a "gqlsubs" event type to go with it, and use the Doctrine UnitOfWork to actually publish events only to subscribers for the changed fields.
+I have defined a new store just for GraphQL subscriptions, a "gqlsubs" event type to go with it, and used the Doctrine UnitOfWork to actually publish events only to subscribers for the changed fields.
 ## SSE
 ### Message type is not sent (002)
 Commit: 356ebf6b6836b44380d8da6d18a563d402c085aa

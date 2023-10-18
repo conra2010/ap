@@ -8,18 +8,18 @@ open https://{$SERVER_NAME}
 ```
 once we decide a server name and start the containers.
 
-Since we are using HTTPS, we will need a certificate/key pair for the web server; the certificates are created for specific host and domain names, so the ones provided in _api/docker/ca_ are valid for those names. If you need to use a different server name, see _doc/api-platform/A002 Configuration_  to setup a certification authority and issue certificates.
+Since we are using HTTPS, we will need a certificate/key pair for the web server; certificates are created for specific host and domain names, so the ones provided in _api/docker/ca_ are valid for those names. If you need to use a different server name, see _doc/api-platform/A002 Configuration_  to setup a certification authority and issue certificates.
 
-Right now I'm testing Tailscale and I'm using a server name _ukemochi.elf-basilisk.ts.net_ to be able to access the platform in the VPN.
+Right now I'm testing Tailscale and I'm using a server name _ukemochi.elf-basilisk.ts.net_ to be able to access the platform in my VPN.
 
-Before this I've also used the server names that _OrbStack_ provides for Docker services.
+Before this I've also used the server names that _OrbStack_ provides for Docker services. Did some testing with WireGuard VPN ([linuxserver.io image](https://github.com/linuxserver/docker-wireguard)) and Pi-Hole for DNS, but the Tailscale setup is much easier.
 ## Setup
 Review some configuration values in the project.
 ```shell
 cp .env .env.local
 cat .env.local
 ```
-See _doc/api-platform/A002 Configuration_ if you need to change the server name, to setup certificates for it.
+See _doc/api-platform/A002 Configuration_ if you need to change the server name, to issue certificates for it.
 
 Review the _Caddyfile_ and the certificate/key pair in the _ca_ folder; check the server name and the _tls_ directive that points to the certificate/key for it. You'll need to change the _cors_origins_ directive to the name of the development web server if you want to check out the _Vue_ example app.
 

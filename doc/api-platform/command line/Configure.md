@@ -11,7 +11,7 @@ The JWT token can be copied from the Mercure Debug UI that should be running her
 ```shell
 open $MERCURE_ENTRYPOINT/.well-known/mercure/ui/#discover
 ```
-Paste this command, then copy the value of the JWT token, and then execute the command to save the token into another variable:
+Paste the following command, then copy the value of the JWT token, and then execute the command to save the token into another variable:
 ```shell (fish)
 set JWT_TOKEN (pbpaste)
 ```
