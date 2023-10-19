@@ -1,7 +1,7 @@
 # Environment
 All commands use the _fish_ shell syntax; probably some minor changes for _bash_.
 ```shell (fish)
-set CA_BUNDLE (pwd)/api/docker/ca/ca-bundle.crt
+set CA_BUNDLE {$CA_ROOT}/{$CA_NAME}_ca_bundle.crt
 alias httpx 'http --verify {$CA_BUNDLE}'
 set AP_ENTRYPOINT https://{$SERVER_NAME}
 set MERCURE_ENTRYPOINT https://{$SERVER_NAME}

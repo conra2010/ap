@@ -5,17 +5,20 @@ brew install step
 ```
 And following the [basic crypto operations document](https://smallstep.com/docs/step-cli/basic-crypto-operations/)... set a random name for the CA or decide one:
 ```shell
+# the 'names' command generates random names
 set CA_NAME (names)
 ```
-
+```shell
+mkdir {$CA_NAME} ; set CA_ROOT (pwd)/{$CA_NAME} ; cd {$CA_ROOT}
+```
 Create the certificate and key for the root authority:
 ```shell 
-step certificate create --profile root-ca "{$CA_NAME} Root CA" \
+step certificate create --profile root-ca {$CA_NAME}" Root CA" \
 	{$CA_NAME}_root_ca.crt {$CA_NAME}_root_ca.key
 ```
 And for the intermediate CA:
 ```shell
-step certificate create "{$CA_NAME} Intermediate CA 1" \
+step certificate create {$CA_NAME}" Intermediate CA 1" \
     {$CA_NAME}_intermediate_ca_one.crt \
     {$CA_NAME}_intermediate_ca_one.key \
     --profile intermediate-ca \
@@ -40,9 +43,21 @@ And decrypt the key to install in the Caddy config:
 ```shell
 openssl ec -in {$SERVER_NAME}.key -out {$SERVER_NAME}_unsecure.key
 ```
-Review the Caddyfile and the _ca_ folder that will be mounted into the image:
+
+Install the authority into the system store or web browser store. 
 ```shell
-open api/docker
+# show info in Keychain and change Trust settings to 'Always Trust'
+open {$CA_NAME}_root_ca.crt
+```
+```shell
+# change Trust settings
+open {$CA_NAME}_intermediate_ca_one.crt
+```
+
+Now copy the server certificate and key to the API Platform _ca_ folder and change the _Caddyfile_.
+
+```shell
+cp {$CA_ROOT}/{$SERVER_NAME}* {$AP_ROOT}/api/docker/ca
 ```
 # WireGuard
 This _kind of_ works but is not as straightforward as the Tailscale solution. It involves a [WireGuard server](https://github.com/linuxserver/docker-wireguard) image, a [DNS server](https://github.com/pi-hole/docker-pi-hole) and a lot of doubts.

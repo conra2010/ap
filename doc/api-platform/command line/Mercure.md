@@ -14,6 +14,11 @@ while true; clear; date; \
 	sleep 3; \
 end
 ```
+
+Get to the debug Mercure web app and subscribe to a topic to see results in the previous query.
+```shell
+open $MERCURE_ENTRYPOINT/.well-known/mercure/ui/#discover
+```
 # Subscribe to topics
 Listen to events about the "Post" resource; the modified API Platform will publish the type of change (insert, update, delete, GraphQL Subscription) in the _event_ field of the stream:
 ```shell (fish)
