@@ -3,3 +3,5 @@
 .obsidian
 doc/api-platform/.obsidian
 .env.local
+.idea
+.vscode
