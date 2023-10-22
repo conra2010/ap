@@ -51,7 +51,7 @@ http://caddy {
             # and the Mercure server; this will enable CORS for the
             # development servers that "pnpm dev --host" launches
             #
-            cors_origins http://shodan.local:5173 http://shodan:5173
+            cors_origins http://shodan.local:5173 http://shodan:5173 http://shodan.local:4173 http://shodan:4173
         }
         vulcain
 
@@ -121,7 +121,7 @@ https://ukemochi.elf-basilisk.ts.net {
             # and the Mercure server; this will enable CORS for the
             # development servers that "pnpm dev --host" launches
             #
-            cors_origins http://shodan.local:5173 http://shodan:5173
+            cors_origins http://shodan.local:5173 http://shodan:5173 http://shodan.local:4173 http://shodan:4173
         }
         vulcain
 
