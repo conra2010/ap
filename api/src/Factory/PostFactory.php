@@ -5,6 +5,7 @@ namespace App\Factory;
 use App\Entity\Post;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
+use function Zenstruck\Foundry\lazy;
 
 /**
  * @extends ModelFactory<Post>
@@ -38,6 +39,7 @@ final class PostFactory extends ModelFactory
             'stars' => self::faker()->randomNumber(4),
             'author' => self::faker()->userName(),
             'version' => self::faker()->semver(),
+            'tags' => lazy(fn() => TagFactory::randomSet(2)),
         ];
     }
 
