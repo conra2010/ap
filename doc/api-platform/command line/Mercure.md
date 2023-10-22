@@ -22,7 +22,8 @@ open $MERCURE_ENTRYPOINT/.well-known/mercure/ui/#discover
 # Subscribe to topics
 Listen to events about the "Post" resource; the modified API Platform will publish the type of change (insert, update, delete, GraphQL Subscription) in the _event_ field of the stream:
 ```shell (fish)
-httpx -p hbm --stream GET {$MERCURE_ENTRYPOINT}'/.well-known/mercure?topic='{$MERCURE_TOPICS_PREFIX}'/posts/{id}'
+httpx -p hbm --stream \
+	GET {$MERCURE_ENTRYPOINT}'/.well-known/mercure?topic='{$MERCURE_TOPICS_PREFIX}'/posts/{id}'
 ```
 Insert, update or delete some Post resources (in the GraphQL Playground, or in the Vue sample app, for instance) to receive some events.
 ```graphql
