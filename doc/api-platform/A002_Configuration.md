@@ -54,12 +54,13 @@ open {$CA_NAME}_root_ca.crt
 open {$CA_NAME}_intermediate_ca_one.crt
 ```
 
-Now copy the server certificate and key to the API Platform _ca_ folder and change the _Caddyfile_.
+Now copy the server certificate and key to the API Platform _ca_ folder and change the _Caddyfile_ (_api/docker/caddy_).
 
 ```shell
 cp {$CA_ROOT}/{$SERVER_NAME}* {$AP_ROOT}/api/docker/ca
+mv {$AP_ROOT}/api/docker/ca/{$SERVER_NAME}_unsecure.key {$AP_ROOT}/api/docker/ca/{$SERVER_NAME}.key
 ```
-# WireGuard
+# WireGuard (docs not finished)
 This _kind of_ works but is not as straightforward as the Tailscale solution. It involves a [WireGuard server](https://github.com/linuxserver/docker-wireguard) image, a [DNS server](https://github.com/pi-hole/docker-pi-hole) and a lot of doubts.
 
 I'll keep notes here as I try to understand how this works.
