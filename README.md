@@ -16,7 +16,7 @@ set AP_ROOT (pwd)/ap
 cd {$AP_ROOT}
 ```
 
-Since we are using HTTPS, we will need a certificate/key pair for the web server; certificates are created for specific host and domain names, so the ones provided in _api/docker/ca_ are valid for those names. If you need to use a different server name, see [doc/api-platform/A002 Configuration](doc/api-platform/A002_Configuration) to setup a certification authority and issue certificates.
+Since we are using HTTPS, we will need a certificate/key pair for the web server; certificates are created for specific host and domain names, so the ones provided in _api/docker/ca_ are valid for those names. If you need to use a different server name, see [doc/api-platform/A002 Configuration](doc/api-platform/A002_Configuration.md) to setup a certification authority and issue certificates.
 
 Right now I'm testing Tailscale and I'm using a server name _ukemochi.elf-basilisk.ts.net_ to be able to access the platform in my VPN.
 
